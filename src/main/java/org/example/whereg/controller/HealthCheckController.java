@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
-public class HealthCheck {
+public class HealthCheckController {
 
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> health() {
