@@ -1,9 +1,9 @@
-package org.example.whereg.user;
+package org.example.whereg.domain.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.whereg.user.enums.Department;
-import org.example.whereg.user.enums.Role;
+import org.example.whereg.domain.user.enums.Department;
+import org.example.whereg.domain.user.enums.Role;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
