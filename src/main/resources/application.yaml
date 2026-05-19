@@ -3,8 +3,8 @@ spring:
     name: WhereG
 
   datasource:
-    url: ${DB_URL:}
-    username: ${DB_USERNAME:}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/whereg?serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
+    username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -16,5 +16,15 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
 server:
   port: ${SERVER_PORT:8080}
+
+jwt:
+  secret: ${JWT_SECRET:local-secret-key-for-dev-only}
+  access-expiration: ${JWT_ACCESS_EXPIRATION:1800000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
