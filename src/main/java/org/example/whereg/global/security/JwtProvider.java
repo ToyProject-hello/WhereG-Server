@@ -3,6 +3,7 @@ package org.example.whereg.global.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,19 +11,13 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.access-expiration}")
-    private long accessExpiration;
-
-    @Value("${jwt.refresh-expiration}")
-    private long refreshExpiration;
+    private final JwtProperties jwtProperties;
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.secret());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -30,7 +25,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessExpiration))
+                .expiration(new Date(System.currentTimeMillis() + jwtProperties.accessExpiration()))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -39,7 +34,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .expiration(new Date(System.currentTimeMillis() + jwtProperties.refreshExpiration()))
                 .signWith(getSigningKey())
                 .compact();
     }
