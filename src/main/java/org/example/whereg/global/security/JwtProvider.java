@@ -1,15 +1,20 @@
 package org.example.whereg.global.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
@@ -55,8 +60,17 @@ public class JwtProvider {
                     .build()
                     .parseSignedClaims(token);
             return true;
-        } catch (Exception e) {
-            return false;
+        } catch (ExpiredJwtException e) {
+            log.warn("만료된 토큰: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.warn("잘못된 형식의 토큰: {}", e.getMessage());
+        } catch (SecurityException e) {
+            log.warn("서명이 유효하지 않은 토큰: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.warn("지원하지 않는 토큰: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.warn("토큰이 비어있음: {}", e.getMessage());
         }
+        return false;
     }
 }
