@@ -1,4 +1,4 @@
-package org.example.whereg.domain.user;
+package org.example.whereg.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
