@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class TokenParser {
 
-    private static final String BEARER_PREFIX = "Bearer";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     public String resolveToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
-            return authHeader.substring(7);
+            return authHeader.substring(BEARER_PREFIX.length());
         }
         return null;
     }
