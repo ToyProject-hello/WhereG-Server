@@ -1,4 +1,4 @@
-package org.example.whereg.domain.user;
+package org.example.whereg.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,4 +44,8 @@ public class User {
     @Column(nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

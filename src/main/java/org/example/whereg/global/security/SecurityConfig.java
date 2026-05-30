@@ -6,6 +6,7 @@ import org.example.whereg.global.security.handler.JwtAuthenticationEntryPoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -37,7 +38,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/signin").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/auth/reissue").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/email").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/email/verify").permitAll()
                         .requestMatchers("/api/v1/health").permitAll()
                         .anyRequest().authenticated()
                 )
