@@ -44,4 +44,8 @@ public class User {
     @Column(nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

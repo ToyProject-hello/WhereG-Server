@@ -1,6 +1,7 @@
 package org.example.whereg.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.whereg.domain.auth.dto.request.ChangePasswordRequest;
 import org.example.whereg.domain.auth.dto.request.SignInRequest;
 import org.example.whereg.domain.auth.dto.request.SignUpRequest;
 import org.example.whereg.domain.auth.dto.response.TokenResponse;
@@ -11,13 +12,11 @@ import org.example.whereg.global.exception.ErrorCode;
 import org.example.whereg.global.exception.GlobalException;
 import org.example.whereg.global.security.JwtProperties;
 import org.example.whereg.global.security.JwtProvider;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
-
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class AuthService {
     private final JwtProperties jwtProperties;
     private final StringRedisTemplate redisTemplate;
 
-    public void signup(SignUpRequest request) {
+    public void signUp(SignUpRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new GlobalException(ErrorCode.DUPLICATE_EMAIL);
         }
@@ -41,18 +40,15 @@ public class AuthService {
                 .password(encodedPassword)
                 .department(request.department())
                 .grade(request.grade())
-                .role(Role.USER)  // 기본값 USER
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
-
-
     }
-    public TokenResponse signIn(SignInRequest request) {
 
+    public TokenResponse signIn(SignInRequest request) {
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() ->
-                        new GlobalException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new GlobalException(ErrorCode.PASSWORD_MISMATCH);
@@ -75,6 +71,7 @@ public class AuthService {
                 .refreshTokenExpiresIn(jwtProperties.refreshExpiration())
                 .build();
     }
+
     public TokenResponse reissue(String refreshToken) {
         if (!jwtProvider.validateToken(refreshToken)) {
             throw new GlobalException(ErrorCode.INVALID_REFRESH_TOKEN);
@@ -103,5 +100,24 @@ public class AuthService {
                 .accessTokenExpiresIn(jwtProperties.accessExpiration())
                 .refreshTokenExpiresIn(jwtProperties.refreshExpiration())
                 .build();
+    }
+
+    public void signOut(String accessToken) {
+        String email = jwtProvider.getEmail(accessToken);
+        redisTemplate.delete("RT:" + email);
+    }
+
+    public void changePassword(String accessToken, ChangePasswordRequest request) {
+        String email = jwtProvider.getEmail(accessToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new GlobalException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.newPassword());
+        user.changePassword(encodedPassword);
+        userRepository.save(user);
     }
 }
