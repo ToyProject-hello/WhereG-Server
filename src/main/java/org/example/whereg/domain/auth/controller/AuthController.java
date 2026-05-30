@@ -41,14 +41,14 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reissue")
+    @PutMapping("/reissue")
     public ResponseEntity<TokenResponse> reissue(
-            HttpServletRequest request) {
-        String accessToken = tokenParser.resolveToken(request);
-        return ResponseEntity.ok(authService.reissue(accessToken));
+            @RequestHeader("X-Refresh-Token") String refreshToken) {
+        return ResponseEntity.ok(authService.reissue(refreshToken));
     }
     @PostMapping("/email")
-    public ResponseEntity<Void> sendEmail(@RequestParam String email) {
+    public ResponseEntity<Void> sendEmail(
+            @RequestParam String email) {
         emailService.sendVerificationEmail(email);
         return ResponseEntity.ok().build();
     }
