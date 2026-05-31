@@ -1,6 +1,7 @@
 package org.example.whereg.domain.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.whereg.domain.auth.dto.request.ChangePasswordRequest;
 import org.example.whereg.domain.auth.dto.request.SignInRequest;
@@ -22,7 +23,7 @@ public class AuthController {
     private final TokenParser tokenParser;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest request) {
+    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
         authService.signUp(request);
         return ResponseEntity.ok().build();
     }
