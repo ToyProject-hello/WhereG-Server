@@ -103,7 +103,7 @@ public class AuthService {
     }
 
     public void signOut(String accessToken) {
-        String email = jwtProvider.getEmail(accessToken);
+        String email = jwtProvider.getEmailFromExpiredToken(accessToken);
         redisTemplate.delete("RT:" + email);
     }
 
