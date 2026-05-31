@@ -15,11 +15,13 @@ import org.example.whereg.global.security.JwtProvider;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -28,6 +30,7 @@ public class AuthService {
     private final JwtProperties jwtProperties;
     private final StringRedisTemplate redisTemplate;
 
+    @Transactional
     public void signUp(SignUpRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new GlobalException(ErrorCode.DUPLICATE_EMAIL);
@@ -107,6 +110,7 @@ public class AuthService {
         redisTemplate.delete("RT:" + email);
     }
 
+    @Transactional
     public void changePassword(String accessToken, ChangePasswordRequest request) {
         String email = jwtProvider.getEmail(accessToken);
         User user = userRepository.findByEmail(email)
@@ -118,6 +122,5 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(request.newPassword());
         user.changePassword(encodedPassword);
-        userRepository.save(user);
     }
 }
