@@ -17,10 +17,10 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
     private final StringRedisTemplate redisTemplate;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private String createCode() {
-        SecureRandom random = new SecureRandom();
-        int code = random.nextInt(900000) + 100000;
+        int code = SECURE_RANDOM.nextInt(900000) + 100000;
         return String.valueOf(code);
     }
 
