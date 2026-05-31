@@ -47,6 +47,7 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        redisTemplate.delete("EMAIL_VERIFIED:" + request.email());
     }
 
     public TokenResponse signIn(SignInRequest request) {
@@ -122,5 +123,16 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(request.newPassword());
         user.changePassword(encodedPassword);
+    }
+    public void verifyCode(String email, String code) {
+        String savedCode = redisTemplate.opsForValue().get("EMAIL:" + email);
+        if (savedCode == null) {
+            throw new GlobalException(ErrorCode.EMAIL_CODE_EXPIRED);
+        }
+        if (!savedCode.equals(code)) {
+            throw new GlobalException(ErrorCode.EMAIL_CODE_MISMATCH);
+        }
+        redisTemplate.delete("EMAIL:" + email);
+        redisTemplate.opsForValue().set("EMAIL_VERIFIED:" + email, "true", 10, TimeUnit.MINUTES);
     }
 }
