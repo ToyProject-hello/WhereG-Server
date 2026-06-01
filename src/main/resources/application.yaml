@@ -2,6 +2,16 @@ spring:
   application:
     name: WhereG
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/whereg?serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
     username: ${DB_USERNAME:root}

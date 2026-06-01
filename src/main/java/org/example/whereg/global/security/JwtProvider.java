@@ -73,4 +73,16 @@ public class JwtProvider {
         }
         return false;
     }
+    public String getEmailFromExpiredToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
+    }
 }
