@@ -46,5 +46,7 @@ public class EmailService {
         if (!savedCode.equals(code)) {
             throw new GlobalException(ErrorCode.EMAIL_CODE_MISMATCH);
         }
+        redisTemplate.delete("EMAIL:" + email);
+        redisTemplate.opsForValue().set("EMAIL_VERIFIED:" + email, "true", 10, TimeUnit.MINUTES);
     }
 }
