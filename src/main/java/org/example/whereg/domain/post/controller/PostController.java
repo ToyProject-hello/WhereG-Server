@@ -36,9 +36,10 @@ public class PostController {
     }
 
     @GetMapping("/mypost")
-    public ResponseEntity<List<PostResponse>> getMyPosts(
-            @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(postService.getMyPosts(user));
+    public ResponseEntity<Page<PostResponse>> getMyPosts(
+            @AuthenticationPrincipal User user,
+            Pageable pageable) {
+        return ResponseEntity.ok(postService.getMyPosts(user, pageable));
     }
 
     @GetMapping("/{postId}")

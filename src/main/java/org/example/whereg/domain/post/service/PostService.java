@@ -1,8 +1,9 @@
 package org.example.whereg.domain.post.service;
 
+import org.example.whereg.global.exception.GlobalException;
+import org.example.whereg.global.exception.ErrorCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.example.whereg.domain.post.dto.request.CreatePostRequest;
 import org.example.whereg.domain.post.dto.response.PostResponse;
@@ -42,24 +43,22 @@ public class PostService {
 
     public PostResponse getPost(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
         return PostResponse.from(post);
     }
 
-    public List<PostResponse> getMyPosts(User user) {
-        return postRepository.findByAuthor(user)
-                .stream()
-                .map(PostResponse::from)
-                .toList();
+    public Page<PostResponse> getMyPosts(User user, Pageable pageable) {
+        return postRepository.findByAuthor(user, pageable)
+                .map(PostResponse::from);
     }
 
     @Transactional
     public void deletePost(Long postId, User user) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
 
         if (!post.getAuthor().getId().equals(user.getId())) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
+            throw new GlobalException(ErrorCode.FORBIDDEN);
         }
 
         postRepository.delete(post);
