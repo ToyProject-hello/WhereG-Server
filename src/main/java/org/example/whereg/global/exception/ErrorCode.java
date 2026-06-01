@@ -28,6 +28,9 @@ public enum ErrorCode {
     // 이메일 인증
     EMAIL_CODE_EXPIRED(HttpStatus.UNAUTHORIZED, "401", "만료된 인증번호입니다."),
     EMAIL_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "400", "잘못된 인증번호입니다."),
+
+    //게시글
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "404", "게시글을 찾을 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;
