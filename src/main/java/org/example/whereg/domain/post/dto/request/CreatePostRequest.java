@@ -2,10 +2,11 @@ package org.example.whereg.domain.post.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.example.whereg.domain.post.entity.ContentType;
 
 public record CreatePostRequest(
-        @NotBlank String title,
+        @NotBlank @Size(max = 255) String title,
         @NotNull ContentType contentType,
         String foundPlace,
         String photoUrl,

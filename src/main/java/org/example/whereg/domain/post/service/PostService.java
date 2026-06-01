@@ -48,12 +48,18 @@ public class PostService {
     }
 
     public Page<PostResponse> getMyPosts(User user, Pageable pageable) {
+        if (user == null) {
+            throw new GlobalException(ErrorCode.UNAUTHORIZED);
+        }
         return postRepository.findByAuthor(user, pageable)
                 .map(PostResponse::from);
     }
 
     @Transactional
     public void deletePost(Long postId, User user) {
+        if (user == null) {
+            throw new GlobalException(ErrorCode.UNAUTHORIZED);
+        }
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
 

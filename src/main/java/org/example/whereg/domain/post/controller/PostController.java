@@ -8,6 +8,8 @@ import org.example.whereg.domain.post.service.PostService;
 import org.example.whereg.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -31,14 +33,15 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PostResponse>> getPosts(Pageable pageable) {
+    public ResponseEntity<Page<PostResponse>> getPosts(
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(postService.getPosts(pageable));
     }
 
     @GetMapping("/mypost")
     public ResponseEntity<Page<PostResponse>> getMyPosts(
             @AuthenticationPrincipal User user,
-            Pageable pageable) {
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(postService.getMyPosts(user, pageable));
     }
 
