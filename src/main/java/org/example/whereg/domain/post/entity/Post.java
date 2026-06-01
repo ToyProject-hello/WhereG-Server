@@ -33,8 +33,10 @@ public class Post {
 
     private String foundPlace;
 
+    @Column(length = 1000)
     private String photoUrl;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @CreatedDate
