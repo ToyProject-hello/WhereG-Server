@@ -14,8 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.net.URI;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/v1/post")
@@ -28,8 +27,8 @@ public class PostController {
     public ResponseEntity<Void> createPost(
             @RequestBody @Valid CreatePostRequest request,
             @AuthenticationPrincipal User user) {
-        Long id = postService.createPost(request, user);
-        return ResponseEntity.created(URI.create("/api/v1/post/" + id)).build();
+        postService.createPost(request, user);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping

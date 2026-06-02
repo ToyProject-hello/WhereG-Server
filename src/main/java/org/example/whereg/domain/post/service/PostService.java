@@ -14,17 +14,14 @@ import org.example.whereg.domain.user.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class PostService {
 
     private final PostRepository postRepository;
 
     @Transactional
-    public Long createPost(CreatePostRequest request, User user) {
+    public void createPost(CreatePostRequest request, User user) {
         Post post = Post.create(
                 user,
                 request.contentType(),
@@ -33,33 +30,30 @@ public class PostService {
                 request.photoUrl(),
                 request.content()
         );
-        return postRepository.save(post).getId();
+        postRepository.save(post);
     }
 
+    @Transactional(readOnly = true)
     public Page<PostResponse> getPosts(Pageable pageable) {
         return postRepository.findAll(pageable)
                 .map(PostResponse::from);
     }
 
+    @Transactional(readOnly = true)
     public PostResponse getPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
         return PostResponse.from(post);
     }
 
+    @Transactional(readOnly = true)
     public Page<PostResponse> getMyPosts(User user, Pageable pageable) {
-        if (user == null) {
-            throw new GlobalException(ErrorCode.UNAUTHORIZED);
-        }
         return postRepository.findByAuthor(user, pageable)
                 .map(PostResponse::from);
     }
 
     @Transactional
     public void deletePost(Long postId, User user) {
-        if (user == null) {
-            throw new GlobalException(ErrorCode.UNAUTHORIZED);
-        }
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
 

@@ -31,6 +31,7 @@ public class Post {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = true)
     private String foundPlace;
 
     @Column(length = 1000)
