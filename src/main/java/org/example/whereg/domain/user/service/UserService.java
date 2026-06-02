@@ -17,9 +17,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
+    private final JwtProvider jwtProvider;
 
     @Transactional
-    public void withdraw(String email) {
+    public void withdraw(String accessToken) {
+        String email = jwtProvider.getEmail(accessToken);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
         userRepository.delete(user);

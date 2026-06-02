@@ -19,16 +19,11 @@ public class UserController {
 
     private final UserService userService;
     private final TokenParser tokenParser;
-    private final JwtProvider jwtProvider;
 
     @DeleteMapping("/withdraw")
     public ResponseEntity<Void> withdraw(HttpServletRequest request) {
         String accessToken = tokenParser.resolveToken(request);
-        if (accessToken == null) {
-            throw new GlobalException(ErrorCode.UNAUTHORIZED);
-        }
-        String email = jwtProvider.getEmail(accessToken);
-        userService.withdraw(email);
+        userService.withdraw(accessToken);
         return ResponseEntity.ok().build();
     }
 }
