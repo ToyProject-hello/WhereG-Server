@@ -16,15 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
     private final StringRedisTemplate redisTemplate;
 
     @Transactional
-    public void withdraw(String accessToken) {
-        String email = jwtProvider.getEmail(accessToken);
-
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
-
+    public void withdraw(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
         userRepository.delete(user);
         redisTemplate.delete("RT:" + email);
     }
