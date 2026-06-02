@@ -31,7 +31,8 @@ public enum ErrorCode {
 
     //게시글
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "404", "게시글을 찾을 수 없습니다."),
-    ;
+    POST_AUTHOR_MISMATCH(HttpStatus.FORBIDDEN, "403", "게시글 작성자가 아닙니다."),
+    POST_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "400", "이미 삭제된 게시글입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
