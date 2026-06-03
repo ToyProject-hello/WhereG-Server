@@ -8,7 +8,7 @@ import org.example.whereg.domain.post.entity.ContentType;
 public record CreatePostRequest(
         @NotBlank @Size(max = 255) String title,
         @NotNull ContentType contentType,
-        String foundPlace,
-        String photoUrl,
+        @Size(max = 255) String foundPlace,
+        @Size(max = 1000) String photoUrl,
         String content
 ) {}

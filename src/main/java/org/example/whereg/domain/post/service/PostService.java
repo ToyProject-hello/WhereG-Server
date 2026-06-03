@@ -58,7 +58,7 @@ public class PostService {
                 .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
 
         if (!post.getAuthor().getId().equals(user.getId())) {
-            throw new GlobalException(ErrorCode.FORBIDDEN);
+            throw new GlobalException(ErrorCode.POST_AUTHOR_MISMATCH);
         }
 
         postRepository.delete(post);
