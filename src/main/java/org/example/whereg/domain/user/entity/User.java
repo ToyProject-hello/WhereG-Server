@@ -54,6 +54,7 @@ public class User implements UserDetails {
     public void changePassword(String newPassword) {
         this.password = newPassword;
     }
+<<<<<<< HEAD
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,3 +66,6 @@ public class User implements UserDetails {
         return email;
     }
 }
+=======
+}
+>>>>>>> origin/develop

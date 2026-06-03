@@ -49,4 +49,6 @@ public class EmailService {
         redisTemplate.delete("EMAIL:" + email);
         redisTemplate.opsForValue().set("EMAIL_VERIFIED:" + email, "true", 10, TimeUnit.MINUTES);
     }
+
+
 }
