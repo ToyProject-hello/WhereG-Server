@@ -32,12 +32,13 @@ public class AuthService {
 
     @Transactional
     public void signUp(SignUpRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
-            throw new GlobalException(ErrorCode.DUPLICATE_EMAIL);
-        }
         String verified = redisTemplate.opsForValue().get("EMAIL_VERIFIED:" + request.email());
         if (verified == null || !verified.equals("true")) {
             throw new GlobalException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
+
+        if (userRepository.existsByEmail(request.email())) {
+            throw new GlobalException(ErrorCode.DUPLICATE_EMAIL);
         }
         String encodedPassword = passwordEncoder.encode(request.password());
 
