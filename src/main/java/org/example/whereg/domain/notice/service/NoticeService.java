@@ -60,7 +60,10 @@ public class NoticeService {
     }
 
     private void validateAdmin(User user) {
-        if (user == null || user.getRole() != Role.ADMIN) {
+        if (user == null) {
+            throw new GlobalException(ErrorCode.UNAUTHORIZED);
+        }
+        if (user.getRole() != Role.ADMIN) {
             throw new GlobalException(ErrorCode.FORBIDDEN);
         }
     }
