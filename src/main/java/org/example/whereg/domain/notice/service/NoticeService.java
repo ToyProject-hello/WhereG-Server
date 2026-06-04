@@ -54,13 +54,13 @@ public class NoticeService {
 
     @Transactional(readOnly = true)
     public NoticeResponse getNotice(Long noticeId) {
-        Notice notice = noticeRepository.findById(noticeId)
+        Notice notice = noticeRepository.findWithAuthorById(noticeId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOTICE_NOT_FOUND));
         return NoticeResponse.from(notice);
     }
 
     private void validateAdmin(User user) {
-        if (user.getRole() != Role.ADMIN) {
+        if (user == null || user.getRole() != Role.ADMIN) {
             throw new GlobalException(ErrorCode.FORBIDDEN);
         }
     }
