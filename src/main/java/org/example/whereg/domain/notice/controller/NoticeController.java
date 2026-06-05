@@ -29,16 +29,17 @@ public class NoticeController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<NoticeResponse>> getAllNotices() {
         return ResponseEntity.ok(noticeService.getAllNotices());
     }
 
-    @PatchMapping("/update")
+    @PatchMapping("/{noticeId}")
     public ResponseEntity<Void> updateNotice(
+            @PathVariable Long noticeId,
             @RequestBody @Valid UpdateNoticeRequest request,
             @AuthenticationPrincipal User user) {
-        noticeService.updateNotice(user, request);
+        noticeService.updateNotice(user, noticeId, request);
         return ResponseEntity.noContent().build();
     }
 

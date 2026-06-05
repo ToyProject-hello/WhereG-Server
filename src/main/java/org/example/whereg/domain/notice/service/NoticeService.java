@@ -37,9 +37,9 @@ public class NoticeService {
     }
 
     @Transactional
-    public void updateNotice(User user, UpdateNoticeRequest request) {
+    public void updateNotice(User user, Long noticeId, UpdateNoticeRequest request) {
         validateAdmin(user);
-        Notice notice = noticeRepository.findById(request.noticeId())
+        Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOTICE_NOT_FOUND));
         notice.update(request.title(), request.content());
     }
