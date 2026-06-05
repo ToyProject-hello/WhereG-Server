@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,6 +20,7 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final TokenParser tokenParser;
+    private final UserDetailsService userDetailsService;  // 추가
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -25,25 +28,28 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = tokenParser.resolveToken(request);
 
-            if (token != null && jwtProvider.validateToken(token)) {
-                String email = jwtProvider.getEmail(token);
+        if (token != null && jwtProvider.validateToken(token)) {
+            String email = jwtProvider.getEmail(token);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(email, null, List.of());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);  // 변경
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());  // 변경
 
-            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
 
-            filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return path.equals("/api/v1/auth/signup") ||
-               path.equals("/api/v1/auth/signin") ||
-               path.equals("/api/v1/auth/reissue") ||
-               path.equals("/api/v1/health");
+                path.equals("/api/v1/auth/signin") ||
+                path.equals("/api/v1/auth/reissue") ||
+                path.equals("/api/v1/auth/email") ||
+                path.equals("/api/v1/auth/email/verify") ||
+                path.equals("/api/v1/health");
     }
 }
