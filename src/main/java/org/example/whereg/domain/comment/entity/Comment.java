@@ -51,7 +51,6 @@ public class Comment {
         comment.content = content;
         return comment;
     }
-
     @OneToMany(mappedBy = "parent")
     private List<Comment> children = new ArrayList<>();
 }
