@@ -51,6 +51,7 @@ public class Comment {
         comment.content = content;
         return comment;
     }
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent",
+            cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
 }
