@@ -74,4 +74,19 @@ public class CommentService {
 
         commentRepository.delete(comment);
     }
+
+    @Transactional
+    public void createReply(Long commentId, CreateCommentRequest request, String accessToken) {
+        String email = jwtProvider.getEmail(accessToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+        Comment parent = commentRepository.findById(commentId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND));
+
+        if (parent.getParent() != null) {
+            throw new GlobalException(ErrorCode.INVALID_INPUT);
+        }
+
+        commentRepository.save(Comment.create(user, parent.getPost(), parent, request.content()));
+    }
 }
