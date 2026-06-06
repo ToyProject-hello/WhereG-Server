@@ -27,7 +27,6 @@ public class CommentService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
-    // 댓글 목록 조회
     public List<CommentResponse> getComments(Long postId) {
         List<Comment> comments = commentRepository.findByPostIdAndParentIsNull(postId);
         return comments.stream()
@@ -41,7 +40,6 @@ public class CommentService {
                 .toList();
     }
 
-    // 댓글 작성
     @Transactional
     public void createComment(Long postId, CreateCommentRequest request, String accessToken) {
         String email = jwtProvider.getEmail(accessToken);
@@ -54,6 +52,9 @@ public class CommentService {
         if (request.parentId() != null) {
             parent = commentRepository.findById(request.parentId())
                     .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND));
+            if (parent.getParent() != null || !parent.getPost().getId().equals(postId)) {
+                throw new GlobalException(ErrorCode.INVALID_INPUT);
+            }
         }
 
         commentRepository.save(Comment.create(user, post, parent, request.content()));
