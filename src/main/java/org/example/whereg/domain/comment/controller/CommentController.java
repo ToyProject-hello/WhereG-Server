@@ -25,7 +25,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getComments(postId));
     }
 
-    @PostMapping("/posts/{postId}/comment")
+    @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<Void> createComment(
             @PathVariable Long postId,
             @RequestBody @Valid CreateCommentRequest request,
@@ -41,6 +41,25 @@ public class CommentController {
             HttpServletRequest httpRequest) {
         String accessToken = tokenParser.resolveToken(httpRequest);
         commentService.deleteComment(commentId, accessToken);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/comments/{commentId}/replies")
+    public ResponseEntity<Void> createReply(
+            @PathVariable Long commentId,
+            @RequestBody @Valid CreateCommentRequest request,
+            HttpServletRequest httpRequest) {
+        String accessToken = tokenParser.resolveToken(httpRequest);
+        commentService.createReply(commentId, request, accessToken);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/replies/{replyId}")
+    public ResponseEntity<Void> deleteReply(
+            @PathVariable Long replyId,
+            HttpServletRequest httpRequest) {
+        String accessToken = tokenParser.resolveToken(httpRequest);
+        commentService.deleteComment(replyId, accessToken);
         return ResponseEntity.ok().build();
     }
 }
