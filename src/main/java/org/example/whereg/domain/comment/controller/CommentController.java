@@ -20,12 +20,12 @@ public class CommentController {
     private final CommentService commentService;
     private final TokenParser tokenParser;
 
-    @GetMapping("/{postId}/comment")
+    @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<List<CommentResponse>> getComments(@PathVariable Long postId) {
         return ResponseEntity.ok(commentService.getComments(postId));
     }
 
-    @PostMapping("/{postId}/comment")
+    @PostMapping("/posts/{postId}/comment")
     public ResponseEntity<Void> createComment(
             @PathVariable Long postId,
             @RequestBody @Valid CreateCommentRequest request,
@@ -35,7 +35,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/comment/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long commentId,
             HttpServletRequest httpRequest) {
