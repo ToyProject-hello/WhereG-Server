@@ -46,7 +46,7 @@ public class CommentService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.POST_NOT_FOUND));
 
         Comment parent = null;
         if (request.parentId() != null) {
