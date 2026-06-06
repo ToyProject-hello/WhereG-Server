@@ -7,13 +7,12 @@ import org.example.whereg.domain.notice.dto.response.NoticeResponse;
 import org.example.whereg.domain.notice.entity.Notice;
 import org.example.whereg.domain.notice.repository.NoticeRepository;
 import org.example.whereg.domain.user.entity.User;
-import org.example.whereg.domain.user.enums.Role;
 import org.example.whereg.global.exception.GlobalException;
 import org.example.whereg.global.exception.ErrorCode;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,30 +22,25 @@ public class NoticeService {
 
     @Transactional
     public void createNotice(User user, CreateNoticeRequest request) {
-        validateAdmin(user);
         Notice notice = Notice.create(user, request.title(), request.content());
         noticeRepository.save(notice);
     }
 
     @Transactional(readOnly = true)
-    public List<NoticeResponse> getAllNotices() {
-        return noticeRepository.findAllByOrderByCreatedAtDesc()
-                .stream()
-                .map(NoticeResponse::from)
-                .toList();
+    public Page<NoticeResponse> getAllNotices(Pageable pageable) {
+        return noticeRepository.findAll(pageable)
+                .map(NoticeResponse::from);
     }
 
     @Transactional
-    public void updateNotice(User user, Long noticeId, UpdateNoticeRequest request) {
-        validateAdmin(user);
+    public void updateNotice(Long noticeId, UpdateNoticeRequest request) {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOTICE_NOT_FOUND));
         notice.update(request.title(), request.content());
     }
 
     @Transactional
-    public void deleteNotice(User user, Long noticeId) {
-        validateAdmin(user);
+    public void deleteNotice(Long noticeId) {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOTICE_NOT_FOUND));
         noticeRepository.delete(notice);
@@ -57,14 +51,5 @@ public class NoticeService {
         Notice notice = noticeRepository.findWithAuthorById(noticeId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.NOTICE_NOT_FOUND));
         return NoticeResponse.from(notice);
-    }
-
-    private void validateAdmin(User user) {
-        if (user == null) {
-            throw new GlobalException(ErrorCode.UNAUTHORIZED);
-        }
-        if (user.getRole() != Role.ADMIN) {
-            throw new GlobalException(ErrorCode.FORBIDDEN);
-        }
     }
 }
