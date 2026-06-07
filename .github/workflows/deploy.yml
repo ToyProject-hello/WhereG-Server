@@ -9,40 +9,23 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Pull latest code
+      run: |
+        cd ~/app/backend
+        git pull origin master
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: 'gradle'
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Build with Gradle
-      run: ./gradlew clean build -x test
-
-    - name: Deploy to Server via SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        script: |
-          cd ~/app/backend
-          git pull origin master
-          ./gradlew clean build -x test
-          
-          CURRENT_PID=$(pgrep -f 'whereG.*\.jar')
-          if [ -z "$CURRENT_PID" ]; then
-              echo "No running spring boot application found."
-          else
-              echo "Killing running application with PID: $CURRENT_PID"
-              kill -15 $CURRENT_PID
-              sleep 5
-          fi
-          
-          nohup java -jar build/libs/*.jar > nohup.out 2>&1 &
+    - name: Deploy and Restart Server
+      run: |
+        cd ~/app/backend
+        
+        # 원래 구동 중이던 자바(Spring Boot) 프로그램 번호를 찾아서 안전하게 끕니다.
+        CURRENT_PID=$(pgrep -f 'whereG.*\.jar')
+        if [ -z "$CURRENT_PID" ]; then
+            echo "No running spring boot application found."
+        else
+            echo "Killing running application with PID: $CURRENT_PID"
+            kill -15 $CURRENT_PID
+            sleep 5
+        fi
+        
+        nohup java -jar build/libs/*.jar > nohup.out 2>&1 &
