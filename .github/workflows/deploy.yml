@@ -26,4 +26,4 @@ jobs:
             sleep 5
         fi
         
-        nohup java -jar build/libs/*.jar > nohup.out 2>&1 &
+        nohup java -jar ~/app/backend/build/libs/*.jar > nohup.out 2>&1 &
