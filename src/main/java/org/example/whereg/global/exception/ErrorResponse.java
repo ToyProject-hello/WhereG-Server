@@ -1,4 +1,4 @@
-package org.example.whereg.exception;
+package org.example.whereg.global.exception;
 
 import lombok.Builder;
 
