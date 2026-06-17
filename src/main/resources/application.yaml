@@ -2,16 +2,6 @@ spring:
   application:
     name: WhereG
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/whereg?serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
     username: ${DB_USERNAME:root}
@@ -26,6 +16,18 @@ spring:
       hibernate:
         format_sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:whereg87@gmail.com}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -38,3 +40,6 @@ jwt:
   secret: ${JWT_SECRET:bG9jYWwtc2VjcmV0LWtleS1mb3ItZGV2LW9ubHktMzJieXRlcw==}
   access-expiration: ${JWT_ACCESS_EXPIRATION:1800000}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
