@@ -18,6 +18,8 @@ jobs:
           port: 24148
           script: |
             cd ~/app/backend
-            git pull origin feature/backend-setup
+          #  git pull origin feature/backend-setup
+            git pull origin ${{ github.ref_name }}
+            ./gradlew clean build -x test
             sudo docker compose down
             sudo docker compose up -d --build
