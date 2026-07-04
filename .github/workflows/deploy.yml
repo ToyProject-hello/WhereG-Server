@@ -18,6 +18,6 @@ jobs:
           port: 24146
           script: |
             cd ~/WhereG-Server
-            git pull origin feature/backend-setup
+            git pull origin master
             sudo docker compose down
             sudo docker compose up -d --build
