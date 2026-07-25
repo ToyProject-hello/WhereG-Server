@@ -2,16 +2,13 @@ services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: ""
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: whereg
-    ports:
-      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
 
   redis:
     image: redis:7.0
-    ports:
-      - "6379:6379"
 
   app:
     build: .
@@ -23,4 +20,8 @@ services:
     environment:
       DB_URL: jdbc:mysql://db:3306/whereg?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       DB_USERNAME: root
-      DB_PASSWORD: ""
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+
+volumes:
+  mysql-data:

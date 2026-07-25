@@ -2,7 +2,6 @@ FROM gradle:8.14-jdk21 AS builder
 WORKDIR /app
 
 COPY build.gradle settings.gradle ./
-COPY .git .git
 COPY src src
 
 RUN gradle bootJar -x test
