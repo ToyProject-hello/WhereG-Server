@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.whereg.domain.auth.dto.request.ChangePasswordRequest;
+import org.example.whereg.domain.auth.dto.request.EmailSendRequest;
+import org.example.whereg.domain.auth.dto.request.EmailVerifyRequest;
 import org.example.whereg.domain.auth.dto.request.SignInRequest;
 import org.example.whereg.domain.auth.dto.request.SignUpRequest;
 import org.example.whereg.domain.auth.dto.response.TokenResponse;
@@ -49,15 +51,14 @@ public class AuthController {
     }
     @PostMapping("/email")
     public ResponseEntity<Void> sendEmail(
-            @RequestParam String email) {
-        emailService.sendVerificationEmail(email);
+            @RequestBody @Valid EmailSendRequest request) {
+        emailService.sendVerificationEmail(request.email());
         return ResponseEntity.ok().build();
     }
     @PostMapping("/email/verify")
     public ResponseEntity<Void> verifyCode(
-            @RequestParam String email,
-            @RequestParam String code) {
-        emailService.verifyCode(email, code);
+            @RequestBody @Valid EmailVerifyRequest request) {
+        emailService.verifyCode(request.email(), request.code());
         return ResponseEntity.ok().build();
     }
 
