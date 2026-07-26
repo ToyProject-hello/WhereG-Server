@@ -78,6 +78,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .accessTokenExpiresIn(jwtProperties.accessExpiration())
                 .refreshTokenExpiresIn(jwtProperties.refreshExpiration())
+                .name(user.getName())
                 .build();
     }
 
@@ -92,6 +93,9 @@ public class AuthService {
         if (savedRefreshToken == null || !savedRefreshToken.equals(refreshToken)) {
             throw new GlobalException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         String newAccessToken = jwtProvider.generateAccessToken(email);
         String newRefreshToken = jwtProvider.generateRefreshToken(email);
@@ -108,6 +112,7 @@ public class AuthService {
                 .refreshToken(newRefreshToken)
                 .accessTokenExpiresIn(jwtProperties.accessExpiration())
                 .refreshTokenExpiresIn(jwtProperties.refreshExpiration())
+                .name(user.getName())
                 .build();
     }
 
