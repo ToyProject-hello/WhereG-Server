@@ -2,6 +2,7 @@ package org.example.whereg.global.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,6 +18,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())
                 .body(ErrorResponse.of(e.getErrorCode(), e.getMessage()));
+    }
+
+    // 요청 body 파싱 실패 처리 (잘못된 enum 값, 깨진 JSON 등)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.warn("[NotReadableException] message: {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.INVALID_INPUT.getHttpStatus())
+                .body(ErrorResponse.of(ErrorCode.INVALID_INPUT, "요청 형식이 올바르지 않습니다."));
     }
 
     // @Valid 검증 실패 처리
