@@ -28,6 +28,7 @@ public enum ErrorCode {
     // 이메일 인증
     EMAIL_CODE_EXPIRED(HttpStatus.UNAUTHORIZED, "만료된 인증번호입니다."),
     EMAIL_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "잘못된 인증번호입니다."),
+    PASSWORD_RESET_NOT_VERIFIED(HttpStatus.UNAUTHORIZED, "비밀번호 재설정 인증이 필요합니다."),
 
     //게시글
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),

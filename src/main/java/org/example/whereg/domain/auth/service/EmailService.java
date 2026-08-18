@@ -50,5 +50,27 @@ public class EmailService {
         redisTemplate.opsForValue().set("EMAIL_VERIFIED:" + email, "true", 10, TimeUnit.MINUTES);
     }
 
+    public void sendPasswordResetEmail(String email) {
+        String code = createCode();
+        redisTemplate.opsForValue().set("PW_EMAIL:" + email, code, 5, TimeUnit.MINUTES);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("[어딨G] 비밀번호 재설정 인증번호");
+        message.setText("인증 번호 :" + code);
+        mailSender.send(message);
+    }
+
+    public void verifyPasswordResetCode(String email, String code) {
+        String savedCode = redisTemplate.opsForValue().get("PW_EMAIL:" + email);
+        if (savedCode == null) {
+            throw new GlobalException(ErrorCode.EMAIL_CODE_EXPIRED);
+        }
+        if (!savedCode.equals(code)) {
+            throw new GlobalException(ErrorCode.EMAIL_CODE_MISMATCH);
+        }
+        redisTemplate.delete("PW_EMAIL:" + email);
+        redisTemplate.opsForValue().set("PW_VERIFIED:" + email, "true", 10, TimeUnit.MINUTES);
+    }
 
 }

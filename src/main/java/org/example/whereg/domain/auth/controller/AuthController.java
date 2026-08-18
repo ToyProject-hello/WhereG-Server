@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.whereg.domain.auth.dto.request.ChangePasswordRequest;
+import org.example.whereg.domain.auth.dto.request.ResetPasswordRequest;
 import org.example.whereg.domain.auth.dto.request.SignInRequest;
 import org.example.whereg.domain.auth.dto.request.SignUpRequest;
 import org.example.whereg.domain.auth.dto.response.TokenResponse;
@@ -58,6 +59,28 @@ public class AuthController {
             @RequestParam String email,
             @RequestParam String code) {
         emailService.verifyCode(email, code);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/password/email")
+    public ResponseEntity<Void> sendPasswordResetEmail(
+            @RequestParam String email) {
+        authService.sendPasswordResetCode(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/password/email/verify")
+    public ResponseEntity<Void> verifyPasswordResetCode(
+            @RequestParam String email,
+            @RequestParam String code) {
+        emailService.verifyPasswordResetCode(email, code);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/password/reset")
+    public ResponseEntity<Void> resetPassword(
+            @RequestBody @Valid ResetPasswordRequest request) {
+        authService.resetPassword(request);
         return ResponseEntity.ok().build();
     }
 
