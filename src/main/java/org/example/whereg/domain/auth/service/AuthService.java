@@ -146,10 +146,7 @@ public class AuthService {
 
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        String verified = redisTemplate.opsForValue().get("PW_VERIFIED:" + request.email());
-        if (verified == null || !verified.equals("true")) {
-            throw new GlobalException(ErrorCode.PASSWORD_RESET_NOT_VERIFIED);
-        }
+        validatePasswordResetVerified(request.email());
 
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
@@ -158,5 +155,12 @@ public class AuthService {
 
         redisTemplate.delete("PW_VERIFIED:" + request.email());
         redisTemplate.delete("RT:" + request.email());
+    }
+
+    private void validatePasswordResetVerified(String email) {
+        String verified = redisTemplate.opsForValue().get("PW_VERIFIED:" + email);
+        if (!"true".equals(verified)) {
+            throw new GlobalException(ErrorCode.PASSWORD_RESET_NOT_VERIFIED);
+        }
     }
 }

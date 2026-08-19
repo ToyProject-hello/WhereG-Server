@@ -69,14 +69,19 @@ public class EmailService {
 
     public void verifyPasswordResetCode(String email, String code) {
         String savedCode = redisTemplate.opsForValue().get("PW_EMAIL:" + email);
+        validateCode(savedCode, code);
+
+        redisTemplate.delete("PW_EMAIL:" + email);
+        redisTemplate.opsForValue().set("PW_VERIFIED:" + email, "true", 10, TimeUnit.MINUTES);
+    }
+
+    private void validateCode(String savedCode, String inputCode) {
         if (savedCode == null) {
             throw new GlobalException(ErrorCode.EMAIL_CODE_EXPIRED);
         }
-        if (!savedCode.equals(code)) {
+        if (!savedCode.equals(inputCode)) {
             throw new GlobalException(ErrorCode.EMAIL_CODE_MISMATCH);
         }
-        redisTemplate.delete("PW_EMAIL:" + email);
-        redisTemplate.opsForValue().set("PW_VERIFIED:" + email, "true", 10, TimeUnit.MINUTES);
     }
 
 }
