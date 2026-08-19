@@ -2,6 +2,7 @@ package org.example.whereg.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.whereg.domain.auth.dto.request.ChangePasswordRequest;
+import org.example.whereg.domain.auth.dto.request.ResetPasswordRequest;
 import org.example.whereg.domain.auth.dto.request.SignInRequest;
 import org.example.whereg.domain.auth.dto.request.SignUpRequest;
 import org.example.whereg.domain.auth.dto.response.TokenResponse;
@@ -29,6 +30,7 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final JwtProperties jwtProperties;
     private final StringRedisTemplate redisTemplate;
+    private final EmailService emailService;
 
     @Transactional
     public void signUp(SignUpRequest request) {
@@ -133,5 +135,32 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(request.newPassword());
         user.changePassword(encodedPassword);
+    }
+
+    public void sendPasswordResetCode(String email) {
+        if (!userRepository.existsByEmail(email)) {
+            throw new GlobalException(ErrorCode.USER_NOT_FOUND);
+        }
+        emailService.sendPasswordResetEmail(email);
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        validatePasswordResetVerified(request.email());
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        user.changePassword(passwordEncoder.encode(request.newPassword()));
+
+        redisTemplate.delete("PW_VERIFIED:" + request.email());
+        redisTemplate.delete("RT:" + request.email());
+    }
+
+    private void validatePasswordResetVerified(String email) {
+        String verified = redisTemplate.opsForValue().get("PW_VERIFIED:" + email);
+        if (!"true".equals(verified)) {
+            throw new GlobalException(ErrorCode.PASSWORD_RESET_NOT_VERIFIED);
+        }
     }
 }
