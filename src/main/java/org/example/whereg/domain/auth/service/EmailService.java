@@ -51,6 +51,10 @@ public class EmailService {
     }
 
     public void sendPasswordResetEmail(String email) {
+        if (redisTemplate.hasKey("PW_COOLDOWN:" + email)) {
+            throw new GlobalException(ErrorCode.EMAIL_SEND_COOLDOWN);
+        }
+
         String code = createCode();
         redisTemplate.opsForValue().set("PW_EMAIL:" + email, code, 5, TimeUnit.MINUTES);
 
@@ -59,6 +63,8 @@ public class EmailService {
         message.setSubject("[어딨G] 비밀번호 재설정 인증번호");
         message.setText("인증 번호 :" + code);
         mailSender.send(message);
+
+        redisTemplate.opsForValue().set("PW_COOLDOWN:" + email, "1", 1, TimeUnit.MINUTES);
     }
 
     public void verifyPasswordResetCode(String email, String code) {
